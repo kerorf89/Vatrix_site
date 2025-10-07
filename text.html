@@ -1,171 +1,358 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>ALIVE — Beam Check</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;600;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --purple:#8a4dff;
-}
-*{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial; background:#000; color:#fff; overflow:hidden;}
-canvas#bg{position:fixed; inset:0; width:100%; height:100%; z-index:0;}
-.wrap{position:relative; z-index:2; min-height:100vh; display:flex; align-items:center; justify-content:center; padding:36px; text-align:center;}
-.card{width:100%; max-width:820px; padding:36px; border-radius:16px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.04);}
-h1{font-size:42px; letter-spacing:3px; margin-bottom:8px; font-weight:800; text-shadow: 0 0 15px rgba(138,77,255,0.8);}
-p.lead{color:#dfe7ff; margin-bottom:14px; font-size:18px;}
-p.sub{color:#bfc9e6; margin-bottom:26px; line-height:1.5;}
-.options{display:flex; gap:22px; justify-content:center; flex-wrap:wrap;}
-.btn{padding:22px 32px; border-radius:14px; font-weight:800; font-size:19px; letter-spacing:.6px; cursor:pointer; border:0; min-width:220px; transition: transform .18s ease, box-shadow .3s ease; box-shadow:0 0 20px rgba(0,0,0,0.5);}
-.btn:active{transform: translateY(2px);}
-.btn-purple{background: linear-gradient(180deg,var(--purple), #6b2cff); color:white; box-shadow: 0 0 25px var(--purple), 0 0 50px rgba(138,77,255,0.4);}
-.btn-black{background: linear-gradient(180deg,#0b0b0b,#1c1c1c); color:#ddd; border:1px solid rgba(255,255,255,0.04); box-shadow:0 0 15px rgba(0,0,0,0.5);}
-.btn-site{min-width:220px; padding:22px 28px; border-radius:14px; font-weight:700; font-size:19px; border:0; cursor:pointer; transition: transform .15s, box-shadow .25s; background:rgba(255,255,255,0.03); color:#fff; border:1px solid rgba(255,255,255,0.04);}
-.btn-site:active{transform:translateY(2px);}
-.btn-site.primary{background:linear-gradient(180deg,var(--purple), #6b2cff); box-shadow: 0 0 25px var(--purple), 0 0 50px rgba(138,77,255,0.2);}
-.btn-site.ghost{background:linear-gradient(180deg,#0b0b0b,#1c1c1c);}
-.back-btn{display:inline-block; margin-top:18px; padding:10px 16px; border-radius:12px; background:rgba(255,255,255,0.05); color:#fff; border:1px solid rgba(255,255,255,0.1); cursor:pointer; text-decoration:none; transition:all .2s ease; box-shadow:0 0 15px rgba(138,77,255,0.3);}
-.back-btn:hover{box-shadow:0 0 25px var(--purple), 0 0 50px rgba(138,77,255,0.4); transform:translateY(-2px);}
-.done-btn{margin-top:18px; padding:18px 28px; border-radius:14px; border:0; font-weight:800; font-size:19px; background:linear-gradient(180deg,var(--purple), #6b2cff); color:#fff; cursor:pointer; box-shadow: 0 0 25px var(--purple), 0 0 50px rgba(138,77,255,0.2);}
-.hidden{display:none;}
-ol{ text-align:left; margin:16px auto; max-width:560px; color:#d6dff8; line-height:1.6; padding-left:18px;}
-footer{position:fixed; bottom:14px; left:50%; transform:translateX(-50%); color:#a9b3d9; font-size:13px; z-index:2;}
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ALIVE — Beam Check</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap'); /* Using Montserrat for a bolder, modern feel */
 
-/* Shake animation */
-@keyframes shake {
-  0% { transform: translate(0px, 0px) rotate(0deg); }
-  10% { transform: translate(-4px, 0px) rotate(-2deg); }
-  20% { transform: translate(4px, 0px) rotate(2deg); }
-  30% { transform: translate(-4px, 0px) rotate(-2deg); }
-  40% { transform: translate(4px, 0px) rotate(2deg); }
-  50% { transform: translate(-2px, 0px) rotate(-1deg); }
-  60% { transform: translate(2px, 0px) rotate(1deg); }
-  70% { transform: translate(-1px, 0px) rotate(-1deg); }
-  80% { transform: translate(1px, 0px) rotate(1deg); }
-  90% { transform: translate(0px, 0px) rotate(0deg); }
-  100% { transform: translate(0px, 0px) rotate(0deg); }
-}
-.shake { animation: shake 0.6s; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', system-ui, -apple-system, Segoe UI, Roboto, Arial; /* Changed font to Montserrat */
+    }
+    html, body {
+      height: 100%;
+      background: #000;
+      color: #fff;
+      overflow: hidden;
+      font-size: 17px; /* Slightly adjusted base font size */
+      line-height: 1.6; /* Improved readability */
+    }
+    #net-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+    }
 
-@media(max-width:520px){.card{padding:20px;} h1{font-size:32px;} .btn, .btn-site, .done-btn{min-width:180px; font-size:17px; padding:16px 22px;}}
-</style>
+    .center-wrap {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 30px;
+      text-align: center;
+    }
+
+    .card {
+      width: 95%;
+      max-width: 580px; /* Slightly wider card for better balance */
+      background: rgba(10, 10, 10, 0.85); /* Slightly less transparent background */
+      border-radius: 36px;
+      padding: 50px; /* Slightly more padding */
+      backdrop-filter: blur(18px); /* Increased blur for a smoother effect */
+      box-shadow: 0 0 80px rgba(168, 85, 255, 0.35); /* More prominent, refined shadow */
+      transition: all 0.7s cubic-bezier(0.2, 0.8, 0.2, 1); /* Smoother, more complex transition timing */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      animation: cardFade 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+      border: 1px solid rgba(168, 85, 255, 0.1); /* Subtle border for definition */
+    }
+
+    @keyframes cardFade {
+      from {opacity: 0; transform: translateY(20px) scale(0.97);} /* Added slight Y-translation for entry */
+      to {opacity: 1; transform: translateY(0) scale(1);}
+    }
+
+    .icon-box {
+      width: 140px; /* Larger icon box */
+      height: 140px; /* Larger icon box */
+      border-radius: 40px; /* More pronounced border-radius */
+      background: linear-gradient(145deg, #a855ff, #7f00ff); /* Slightly deeper purple in gradient */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 75px; /* Larger icon font size */
+      color: #fff;
+      box-shadow: 0 0 80px rgba(168, 85, 255, 0.8); /* More intense glow */
+      margin-bottom: 30px; /* Increased margin */
+      animation: pulse 3.5s infinite ease-in-out forwards; /* Longer pulse animation, holds last frame */
+      will-change: transform, box-shadow; /* Optimize for animation */
+    }
+
+    @keyframes pulse {
+      0%,100% {
+        transform: scale(1);
+        box-shadow: 0 0 60px rgba(168,85,255,0.7); /* Refined shadow */
+      }
+      50% {
+        transform: scale(1.08); /* More subtle pulse */
+        box-shadow: 0 0 100px rgba(168,85,255,1); /* More intense peak glow */
+      }
+    }
+
+    h1 {
+      font-size: 2.8rem; /* Even larger heading for impact */
+      line-height: 1.1;
+      margin-bottom: 15px; /* Increased margin */
+      font-weight: 900; /* Even bolder */
+      letter-spacing: -0.03em; /* Tighter letter spacing for a modern look */
+      text-shadow: 0 0 20px rgba(168, 85, 255, 0.6); /* More spread out text shadow */
+    }
+
+    h1 span {
+      color: #a855ff;
+      text-shadow: 0 0 25px #a855ff; /* More intense span glow */
+    }
+
+    p.lead {
+      color: #e0e0e0; /* Slightly brighter text for contrast */
+      margin-bottom: 30px; /* Increased margin */
+      font-size: 1.25rem; /* Larger lead paragraph */
+      font-weight: 600; /* Bolder lead text */
+    }
+
+    .btns {
+      display: flex;
+      gap: 24px; /* Increased gap */
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    button {
+      border: none;
+      padding: 20px 40px; /* Larger padding for buttons */
+      border-radius: 28px; /* Larger border-radius */
+      font-weight: 800;
+      font-size: 1.25rem; /* Larger font size for buttons */
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1); /* Smoother, more distinct transition */
+      min-width: 200px; /* Increased min-width for buttons */
+      letter-spacing: 0.02em; /* Subtle letter spacing */
+    }
+
+    .yes {
+      background: linear-gradient(180deg, #c08bff, #9a5bff); /* Brighter purple gradient */
+      color: #fff;
+      box-shadow: 0 0 60px rgba(168,85,255,0.9); /* More intense glow */
+    }
+    .yes:hover {
+      transform: scale(1.1); /* More pronounced scale on hover */
+      box-shadow: 0 0 90px rgba(168,85,255,1.2); /* Even more intense glow on hover */
+      background: linear-gradient(180deg, #d09eff, #a86cff); /* Slightly brighter on hover */
+    }
+
+    .no {
+      background: #0b0b0b;
+      border: 3px solid #a855ff;
+      color: #fff;
+    }
+    .no:hover {
+      transform: scale(1.1); /* More pronounced scale on hover */
+      box-shadow: 0 0 60px rgba(168,85,255,0.8); /* More intense glow on hover */
+      background: rgba(168, 85, 255, 0.1); /* Subtle background fill on hover */
+    }
+
+    .back {
+      margin-top: 30px;
+      color: #b67bff; /* Slightly brighter purple for back link */
+      cursor: pointer;
+      text-decoration: underline;
+      font-weight: 700; /* Bolder back link */
+      font-size: 1.15rem; /* Larger back link font size */
+      transition: all 0.25s ease-out;
+    }
+    .back:hover {
+      text-shadow: 0 0 15px #a855ff; /* More spread out text shadow */
+      color: #a855ff; /* More vibrant on hover */
+    }
+
+    .sites-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px; /* Increased gap */
+      margin-top: 20px;
+      width: 100%;
+      align-items: center;
+    }
+
+    .site-btn {
+      padding: 18px 30px;
+      border-radius: 30px;
+      width: 100%;
+      max-width: 380px; /* Increased max-width */
+      border: none;
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.18rem; /* Slightly larger font size */
+      cursor: pointer;
+      transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+      letter-spacing: 0.02em;
+    }
+
+    .site-btn.primary {
+      background: linear-gradient(145deg, #a855ff 0%, #4b0082 100%); /* Deeper primary gradient */
+      box-shadow: 0 0 55px rgba(168,85,255,0.9); /* More intense shadow */
+    }
+    .site-btn.primary:hover {
+      transform: scale(1.09); /* More pronounced scale */
+      box-shadow: 0 0 75px rgba(168,85,255,1.2); /* Even more intense shadow */
+      background: linear-gradient(145deg, #b67bff 0%, #5a009d 100%); /* Slightly brighter on hover */
+    }
+
+    .site-btn.secondary {
+      background: linear-gradient(145deg, #151515, #2c004a); /* Slightly refined secondary gradient */
+      border: 2px solid rgba(168,85,255,0.7); /* More visible border */
+    }
+    .site-btn.secondary:hover {
+      transform: scale(1.09);
+      box-shadow: 0 0 50px rgba(168,85,255,0.9);
+      background: linear-gradient(145deg, #252525, #3c005a); /* Slightly brighter on hover */
+    }
+
+    .done-btn {
+      margin-top: 30px;
+      padding: 20px 35px;
+      border-radius: 28px;
+      border: none;
+      background: linear-gradient(180deg, #c08bff, #9a5bff);
+      color: #fff;
+      font-weight: 800;
+      font-size: 1.25rem;
+      cursor: pointer;
+      box-shadow: 0 0 60px rgba(168,85,255,0.9);
+      letter-spacing: 0.02em;
+      transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .done-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 90px rgba(168,85,255,1.2);
+      background: linear-gradient(180deg, #d09eff, #a86cff);
+    }
+
+    .stolen-list {
+      text-align: left;
+      color: #e0e0e0;
+      margin: 20px auto 0;
+      max-width: 420px; /* Slightly wider */
+      line-height: 1.7;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    .stolen-list li {
+      margin: 12px 0;
+    }
+
+    .hidden {display: none;}
+    .fade-out {opacity: 0; transform: translateY(-10px) scale(0.95); transition: all .45s ease-in;} /* Refined fade-out */
+    .fade-in {opacity: 1; transform: translateY(0) scale(1); transition: all .45s ease-out;} /* Refined fade-in */
+
+    @media (max-width:580px){
+      html, body {
+        font-size: 15px;
+      }
+      .card {padding: 35px; border-radius: 28px;}
+      .icon-box {width: 110px; height: 110px; font-size: 60px; border-radius: 30px; margin-bottom: 25px;}
+      h1 {font-size: 2.2rem;}
+      p.lead {font-size: 1.1rem; margin-bottom: 25px;}
+      button {min-width: 160px; padding: 16px 25px; font-size: 1.1rem; border-radius: 24px;}
+      .site-btn {max-width: 320px; padding: 16px 25px; font-size: 1.1rem;}
+      .done-btn {padding: 16px 30px; font-size: 1.1rem; margin-top: 25px;}
+      .back {font-size: 1rem; margin-top: 25px;}
+      .stolen-list {font-size: 1.05rem; max-width: 90%; margin-top: 15px;}
+    }
+  </style>
 </head>
 <body>
-<canvas id="bg"></canvas>
+  <div id="net-bg"></div>
 
-<div class="wrap">
+  <div class="center-wrap">
+    <!-- Main -->
+    <div id="mainCard" class="card fade-in">
+      <div class="icon-box">👾</div>
+      <h1>Does your Beams say <span>“ALIVE”?</span></h1>
+      <p class="lead">Verify your beam setup below to ensure you're not missing out!</p> <!-- Slightly updated lead text -->
+      <div class="btns">
+        <button id="yesBtn" class="yes">✔ Yes, ALIVE</button> <!-- Emphasized ALIVE -->
+        <button id="noBtn" class="no">✖ No, Different</button>
+      </div>
+    </div>
 
-  <!-- Beam Check -->
-  <div id="checkView" class="card">
-    <h1 style="text-align:center; line-height:1.2;">
-      <div>👾</div>
-      <div><span id="aliveText" style="color: var(--purple); cursor:pointer;">ALIVE</span> Beam Check</div>
-    </h1>
-    <p class="lead">Verify your beam setup</p>
-    <p class="sub">Do your beams say "<span style="color: var(--purple);">ALIVE</span>"?<br>If your beams are hooked by another site, they're being stolen by dualhook websites.</p>
-    <div class="options">
-      <button id="yesBtn" class="btn btn-purple">Yes, Alive</button>
-      <button id="noBtn" class="btn btn-black">No, Different</button>
+    <!-- Stolen -->
+    <div id="stolenCard" class="card hidden">
+      <div class="icon-box">👾</div>
+      <h1 style="font-size:2.2rem">YOUR HITS ARE GETTING STOLEN!</h1> <!-- Added exclamation -->
+      <p class="lead" style="margin-bottom:8px">Follow these crucial steps to fix it:</p> <!-- Updated lead text -->
+      <ul class="stolen-list">
+        <li>1. Create a *brand new* Discord account.</li> <!-- Emphasized "brand new" -->
+        <li>2. Access and use our sites *only* within our official Discord server.</li> <!-- Emphasized "only" -->
+      </ul>
+      <button id="stolenDone" class="done-btn">Done — Take me to the Sites</button> <!-- Capitalized Sites -->
+      <div class="back" id="stolenBack">← Back to Check</div> <!-- Updated back text -->
+    </div>
+
+    <!-- Sites -->
+    <div id="sitesCard" class="card hidden">
+      <div class="icon-box">👾</div>
+      <h1>Access <span>ALIVE</span> Sites</h1> <!-- Updated heading -->
+      <div class="sites-list">
+        <button class="site-btn primary" onclick="openLink('https://is.gd/mqwHtT')">Main Site</button>
+        <button class="site-btn secondary" onclick="openLink('https://app.beamers.si/u/Alivesplunk1')">Backup Site</button>
+        <button class="site-btn secondary" onclick="openLink('https://www.logged.tg/tools/refresher')">Cookie Refresher</button>
+        <button class="site-btn secondary" onclick="openLink('https://discord.gg/vWqtZAGfKx')">Join Our Discord</button> <!-- Updated button text -->
+      </div>
+      <div class="back" id="sitesBack">← Back to Check</div> <!-- Updated back text -->
     </div>
   </div>
 
-  <!-- Sites -->
-  <div id="sitesView" class="card" style="display:none;">
-    <h1 style="text-align:center; line-height:1.2;">
-      <div>👾</div>
-      <div style="color: var(--purple); font-weight:800;">Alive</div>
-      <div style="color: #000;">Sites</div>
-    </h1>
-    <p class="lead">Your beams report "<span style="color: var(--purple);">ALIVE</span>". Choose a destination below.</p>
-    <div class="options">
-      <button class="btn-site primary" onclick="go('https://is.gd/mqwHtT')">Main Site</button>
-      <button class="btn-site" onclick="go('https://is.gd/PZkU2Q')">Backup Site</button>
-      <button class="btn-site ghost" onclick="go('https://www.logged.tg/tools/refresher')">Cookie Refresher</button>
-      <button class="btn-site" onclick="go('https://discord.gg/vWqtZAGfK')">Join Discord</button>
-    </div>
-    <button class="back-btn" onclick="backToCheck()">← Back</button>
-  </div>
+  <!-- Background animation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+  <script>
+    let vantaEffect = VANTA.NET({
+      el: "#net-bg",
+      mouseControls: true,
+      touchControls: true,
+      minHeight: 200.00,
+      minWidth: 200.00,
+      scale: 1.00,
+      scaleMobile: 1.00,
+      color: 0xa855ff,
+      backgroundColor: 0x000000,
+      points: 16.00, /* Slightly more points */
+      maxDistance: 25.00, /* Slightly larger max distance */
+      spacing: 16.00 /* Slightly larger spacing */
+    });
 
-  <!-- Stolen -->
-  <div id="stolenView" class="card" style="display:none;">
-    <h1>Your hits are getting stolen</h1>
-    <p class="lead">Here are some steps to prevent that:</p>
-    <ol>
-      <li>Make a new Discord account</li>
-      <li>Use our sites to beam others</li>
-    </ol>
-    <button class="done-btn" id="doneBtn">Done, Take me to the sites</button>
-    <button class="back-btn" onclick="backToCheck()">← Back</button>
-  </div>
+    const mainCard = document.getElementById('mainCard');
+    const stolenCard = document.getElementById('stolenCard');
+    const sitesCard = document.getElementById('sitesCard');
 
-</div>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const stolenDone = document.getElementById('stolenDone');
+    const stolenBack = document.getElementById('stolenBack');
+    const sitesBack = document.getElementById('sitesBack');
 
-<footer>© ALIVE</footer>
+    function show(hideEl, showEl){
+      hideEl.classList.add('fade-out');
+      setTimeout(()=>{
+        hideEl.style.display = 'none';
+        hideEl.classList.remove('fade-out');
+        showEl.style.display = 'flex';
+        showEl.classList.add('fade-in');
+      }, 420);
+    }
 
-<script>
-// Particle background (purple dots)
-const canvas = document.getElementById('bg');
-const ctx = canvas.getContext('2d');
-let W = canvas.width = innerWidth, H = canvas.height = innerHeight;
-const particles = [];
-function rand(min,max){ return Math.random()*(max-min)+min; }
-class P{
-  constructor(){ this.x=rand(0,W); this.y=rand(0,H); this.r=rand(.8,2.5); this.vx=rand(-.2,.2); this.vy=rand(-.2,.2); this.a=rand(.2,.6);}
-  step(){ this.x+=this.vx; this.y+=this.vy; if(this.x<-20||this.x>W+20||this.y<-20||this.y>H+20){this.x=rand(0,W); this.y=rand(0,H);} }
-  draw(){ ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fillStyle=`rgba(138,77,255,${this.a})`; ctx.shadowColor="#8a4dff"; ctx.shadowBlur=8; ctx.fill(); }
-}
-for(let i=0;i<100;i++) particles.push(new P());
-(function loop(){ ctx.clearRect(0,0,W,H); for(const p of particles){p.step();p.draw()} requestAnimationFrame(loop);})();
-addEventListener('resize', ()=>{ W=canvas.width=innerWidth; H=canvas.height=innerHeight; });
+    yesBtn.addEventListener('click', ()=> show(mainCard, sitesCard));
+    noBtn.addEventListener('click', ()=> show(mainCard, stolenCard));
+    stolenDone.addEventListener('click', ()=> show(stolenCard, sitesCard));
+    stolenBack.addEventListener('click', ()=> show(stolenCard, mainCard));
+    sitesBack.addEventListener('click', ()=> show(sitesCard, mainCard));
 
-// Views logic
-const checkView = document.getElementById('checkView');
-const sitesView = document.getElementById('sitesView');
-const stolenView = document.getElementById('stolenView');
-const aliveText = document.getElementById('aliveText');
+    function openLink(url){ window.open(url, '_blank', 'noopener'); }
 
-// Shake on ALIVE click
-aliveText.addEventListener('click', () => {
-  aliveText.classList.add('shake');
-  setTimeout(() => {
-    aliveText.classList.remove('shake');
-  }, 600);
-});
-
-// Yes button click (instant redirect)
-document.getElementById('yesBtn').addEventListener('click', ()=>{
-  aliveText.classList.add('shake');
-  checkView.style.display = 'none';
-  sitesView.style.display = 'block';
-  setTimeout(() => { aliveText.classList.remove('shake'); }, 600);
-});
-
-// No button click
-document.getElementById('noBtn').addEventListener('click', ()=>{
-  checkView.style.display = 'none';
-  stolenView.style.display = 'block';
-});
-
-// Done button
-document.getElementById('doneBtn').addEventListener('click', ()=>{
-  stolenView.style.display = 'none';
-  sitesView.style.display = 'block';
-});
-
-// Back button
-function backToCheck(){
-  sitesView.style.display = 'none';
-  stolenView.style.display = 'none';
-  checkView.style.display = 'block';
-}
-
-// Open links
-function go(url){
-  if(url.startsWith('http')) window.open(url,'_blank');
-  else location.href=url;
-}
-</script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      mainCard.style.display = 'flex';
+      stolenCard.style.display = 'none';
+      sitesCard.style.display = 'none';
+    });
+  </script>
 </body>
 </html>
